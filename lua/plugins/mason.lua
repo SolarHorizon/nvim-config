@@ -145,7 +145,7 @@ return {
 
 				local directoryAliases = {
 					-- TODO: make this grab the version currently in use and set it up if it isnt found
-					["@lune/"] = vim.fs.normalize("~/.lune/.typedefs/0.7.10/"),
+					["@lune/"] = vim.fs.normalize("~/.lune/.typedefs/0.7.11/"),
 				}
 
 				local darklua_config = locate_config({
