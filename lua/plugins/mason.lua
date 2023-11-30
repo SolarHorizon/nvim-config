@@ -231,7 +231,7 @@ return {
 
 				require("luau-lsp").setup({
 					sourcemap = roblox_mode and {
-						enabled = true,
+						enabled = darklua_config == nil,
 						select_project_file = function()
 							return project_file
 						end,
@@ -244,6 +244,16 @@ return {
 					},
 					server = {
 						capabilities = capabilities,
+						root_dir = function(path)
+							local util = require("lspconfig.util")
+							return util.root_pattern(
+								"*.project.json",
+								".luaurc",
+								"selene.toml",
+								"stylua.toml",
+								"wally.toml"
+							)(path) or util.find_git_ancestor(path)
+						end,
 						settings = {
 							["luau-lsp"] = {
 								require = {
