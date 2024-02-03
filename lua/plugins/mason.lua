@@ -230,14 +230,17 @@ return {
 				end
 
 				require("luau-lsp").setup({
-					sourcemap = roblox_mode and {
-						enabled = darklua_config == nil,
-						select_project_file = function()
-							return project_file
-						end,
-					} or {
-						enabled = false,
-					},
+					sourcemap = roblox_mode
+						and {
+							enabled = true,
+							--enabled = darklua_config == nil,
+							select_project_file = function()
+								return project_file
+							end,
+						}
+						or {
+							enabled = false,
+						},
 					types = {
 						definition_files = definition_files,
 						roblox = roblox_mode,

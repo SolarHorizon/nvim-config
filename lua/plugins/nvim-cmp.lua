@@ -38,11 +38,11 @@ return {
 			}, {
 				-- cmp on WSL can't handle :!
 				vim.fn.has("wsl") == 0 and { name = "cmdline" }
-					or {
-						name = "cmdline",
-						keyword_pattern = [=[[^[:blank:]\!]*]=],
-						keyword_length = 3,
-					},
+				or {
+					name = "cmdline",
+					keyword_pattern = [=[[^[:blank:]\!]*]=],
+					keyword_length = 3,
+				},
 			}),
 		})
 	end,

@@ -72,6 +72,10 @@ require("lazy").setup("plugins", {
 		missing = true,
 		colorscheme = { "tokyonight" },
 	},
+	change_detection = {
+		enabled = false,
+		notify = false,
+	},
 	performance = {
 		rtp = {
 			disabled_plugins = { "netrwPlugin" },
