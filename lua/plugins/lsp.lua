@@ -1,5 +1,3 @@
-local roblox_lsp_mode = require("matt/util/roblox_lsp_mode")
-local setup_roblox_lsp = require("matt/util/setup_roblox_lsp")
 local setup_luau_lsp = require("matt/util/setup_luau_lsp")
 
 return {
@@ -90,10 +88,7 @@ return {
 		},
 		config = function()
 			require("neoconf").setup()
-
-			if not roblox_lsp_mode() then
-				require("neodev").setup()
-			end
+			require("neodev").setup()
 
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
@@ -111,25 +106,12 @@ return {
 				lspconfig[name].setup(config)
 			end
 
-			if roblox_lsp_mode() then
-				setup_roblox_lsp()
-				setup_server("robloxlsp")
-			end
-
 			require("mason-lspconfig").setup_handlers({
 				setup_server,
 				["lua_ls"] = function()
-					if roblox_lsp_mode() then
-						return
-					end
-
 					setup_server("lua_ls")
 				end,
 				["luau_lsp"] = function()
-					if roblox_lsp_mode() then
-						return
-					end
-
 					setup_luau_lsp(capabilities)
 				end,
 			})

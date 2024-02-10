@@ -59,14 +59,6 @@ vim.filetype.add({
 	},
 })
 
-local roblox_lsp_mode = require("matt/util/roblox_lsp_mode")
-
-vim.filetype.add({
-	extension = {
-		lua = roblox_lsp_mode() and "luau" or "lua",
-	},
-})
-
 require("lazy").setup("plugins", {
 	install = {
 		missing = true,
