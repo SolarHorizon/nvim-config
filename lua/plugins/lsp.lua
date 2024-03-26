@@ -108,10 +108,22 @@ return {
 
 			require("mason-lspconfig").setup_handlers({
 				setup_server,
-				["lua_ls"] = function()
-					setup_server("lua_ls")
+				yamlls = function(name)
+					setup_server(name, {
+						settings = {
+							yaml = {
+								validate = true,
+								schemaStore = {
+									enable = true,
+								},
+								schemas = {
+									["https://mantledeploy.vercel.app/schemas/v0.11.13/schema.json"] = "mantle.yml",
+								},
+							},
+						},
+					})
 				end,
-				["luau_lsp"] = function()
+				luau_lsp = function()
 					setup_luau_lsp(capabilities)
 				end,
 			})
