@@ -1,4 +1,5 @@
 local setup_luau_lsp = require("matt/util/setup_luau_lsp")
+local is_luau = require("matt/util/is_luau")
 
 return {
 	{
@@ -45,30 +46,25 @@ return {
 			end
 
 			local function register_keymap(ev)
-				wk.register({
-					-- stylua: ignore
-					["<leader>"] = {
-						e = { open_float, "Show diagnostic" },
-						c = {
-							name = "Code actions",
-							a = { vim.lsp.buf.code_action, "Code action" },
-						},
-						d = {
-							name = "Diagnostics",
-							j = { vim.diagnostic.goto_next, "Next message" },
-							k = { vim.diagnostic.goto_prev, "Previous message" },
-							l = { "<cmd>Telescope diagnostics<cr>", "List diagnostics" },
-						},
-						g = {
-							name = "Go to",
-							d = { vim.lsp.buf.definition, "Go to definition" },
-							i = { vim.lsp.buf.implementation, "Go to implementation" },
-							t = { vim.lsp.buf.type_definition, "Go to type definition" },
-						},
-					},
-					K = { vim.lsp.buf.hover, "Hover" },
-				}, {
+				wk.add({
 					buffer = ev.buf,
+
+					{ "<leader>e", open_float, desc = "Show diagnostic" },
+
+					{ "<leader>c", group = "Code Actions" },
+					{ "<leader>ca", vim.lsp.buf.code_action, desc = "Code action" },
+
+					{ "<leader>d", group = "Diagnostics" },
+					{ "<leader>dj", vim.diagnostic.goto_next, desc = "Next message" },
+					{ "<leader>dk", vim.diagnostic.goto_prev, desc = "Previous message" },
+					{ "<leader>dl", cmd = "<cmd>Telescope diagnostics<cr>", desc = "List diagnostics" },
+
+					{ "<leader>g", group = "Go to" },
+					{ "<leader>gd", vim.lsp.buf.definition, desc = "Go to definition" },
+					{ "<leader>gi", vim.lsp.buf.implementation, desc = "Go to implementation" },
+					{ "<leader>gt", vim.lsp.buf.type_definition, desc = "Go to type definition" },
+
+					{ "K", vim.lsp.buf.hover, desc = "Hover" },
 				})
 			end
 
@@ -88,7 +84,10 @@ return {
 		},
 		config = function()
 			require("neoconf").setup()
-			require("neodev").setup()
+
+			if not is_luau() then
+				require("neodev").setup()
+			end
 
 			local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
@@ -123,8 +122,15 @@ return {
 						},
 					})
 				end,
+				lua_ls = function(name)
+					if not is_luau() then
+						setup_server(name)
+					end
+				end,
 				luau_lsp = function()
-					setup_luau_lsp(capabilities)
+					if is_luau() then
+						setup_luau_lsp(capabilities)
+					end
 				end,
 			})
 		end,

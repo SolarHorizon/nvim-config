@@ -57,6 +57,9 @@ vim.filetype.add({
 	extension = {
 		luau = "luau",
 	},
+	filename = {
+		[".luaurc"] = "json",
+	},
 })
 
 require("lazy").setup("plugins", {

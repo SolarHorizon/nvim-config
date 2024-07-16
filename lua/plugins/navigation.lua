@@ -22,27 +22,13 @@ return {
 			},
 		},
 		init = function()
-			local tree = require("neo-tree")
 			local wk = require("which-key")
 
-			wk.register({
-				t = {
-					name = "Neo Tree",
-					t = {
-						"<cmd>Neotree toggle<cr>",
-						"Toggle File Tree",
-					},
-					b = {
-						"<cmd>Neotree toggle show buffers<cr>",
-						"Toggle Buffer Tree",
-					},
-				},
-			}, {
-				prefix = "<leader>",
-			})
-
-			wk.register({
-				["T"] = { "<cmd>Neotree toggle<cr>", "Toggle File Tree" },
+			wk.add({
+				{ "<leader>t", group = "Neo Tree" },
+				{ "<leader>tt", cmd = "<cmd>Neotree toggle<cr>", desc = "Toggle File Tree" },
+				{ "<leader>tb", cmd = "<cmd>Neotree toggle<cr>", desc = "Toggle Buffer Tree" },
+				{ "T", cmd = "<cmd>Neotree toggle<cr>", desc = "Toggle File Tree" }
 			})
 		end,
 		dependencies = {
@@ -62,20 +48,13 @@ return {
 			local wk = require("which-key")
 			local builtin = require("telescope.builtin")
 
-			wk.register({
-				f = {
-					name = "Files",
-					f = { builtin.find_files, "Find File" },
-					g = { builtin.find_files, "Live Grep" },
-					r = { builtin.old_files, "Recent Files" },
-				},
-			}, {
-				prefix = "<leader>",
-			})
-
-			wk.register({
-				["<c-p>"] = { builtin.find_files, "Find File" },
-				["<c-g>"] = { builtin.live_grep, "Live Grep" },
+			wk.add({
+				{ "<leader>f", group = "Files" },
+				{ "<leader>ff", builtin.find_files, desc = "Find File" },
+				{ "<leader>fg", builtin.find_files, desc = "Live Grep" },
+				{ "<leader>fr", builtin.old_files, desc = "Recent Files" },
+				{"<c-p>", builtin.find_files, desc = "Find File" },
+				{"<c-g>", builtin.live_grep, desc = "Live Grep" },
 			})
 		end,
 		dependencies = {
