@@ -1,13 +1,16 @@
 return {
 	{
 		"rcarriga/nvim-notify",
-		config = function()
-			local colors = require("tokyonight.colors").setup()
+		init = function()
+			local notify = require("notify")
+			local wk = require("which-key")
 
-			require("notify").setup({
-				background_colour = colors.bg_dark,
+			wk.add({
+				{ "<leader>n", group = "Notify" },
+				{ "<leader>nc", notify.dismiss, desc = "Clear notifications" },
 			})
 
+			--vim.notify = notify
 			require("telescope").load_extension("notify")
 		end,
 		dependencies = {
@@ -15,6 +18,10 @@ return {
 			"nvim-telescope/telescope.nvim",
 			"folke/tokyonight.nvim",
 		},
+	},
+	{
+		"stevearc/dressing.nvim",
+		opts = {},
 	},
 	{
 		"folke/noice.nvim",

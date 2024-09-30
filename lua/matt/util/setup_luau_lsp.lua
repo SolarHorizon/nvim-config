@@ -1,106 +1,65 @@
 local get_rojo_projects = require("matt/util/get_rojo_projects")
 local locate_config = require("matt/util/locate_config")
 
-local function get_darklua_sources()
-	local darklua_config = locate_config({
-		"darklua.json",
-		".darklua.json",
-	})[1]
+local function normalize(str)
+	local path = string.gsub(str, "\\+", "/")
+	path = string.gsub(path, "//+", "/")
+	return path
+end
 
-	local aliases = {}
+local function trim(str, pattern)
+	return string.format(str, string.format("^(.+)%s$", pattern)) or str
+end
 
-	if darklua_config then
-		local fd = io.open(darklua_config)
+local function load_luaurc()
+	local luau_config = locate_config(".luaurc")[1]
 
-		local content
-
-		if fd then
-			content = vim.json.decode(fd:read("*a"), {
-				luanil = {
-					object = true,
-					array = true,
-				},
-			})
-
-			fd:close()
-		end
-
-		if content then
-			local sources = {}
-
-			if
-				content.bundle
-				and content.bundle.require_mode
-				and content.bundle.require_mode.sources
-			then
-				sources = vim.tbl_extend(
-					"keep",
-					sources,
-					content.bundle.require_mode.sources
-				)
-			end
-
-			if content.rules then
-				for _, rule in ipairs(content.rules) do
-					if type(rule) == "table" then
-						if
-							rule.rule == "convert_require"
-							and rule.current
-							and rule.current.sources
-						then
-							sources = vim.tbl_extend(
-								"keep",
-								sources,
-								rule.current.sources
-							)
-							break
-						end
-					end
-				end
-			end
-
-			if sources then
-				for alias, dir in pairs(sources) do
-					dir = dir:gsub("^./", "$PWD/")
-					aliases[alias .. "/"] = vim.fs.normalize(dir)
-				end
-			end
-		end
+	if not luau_config then
+		return {}
 	end
 
-	return aliases
+	local fd = io.open(luau_config)
+
+	local luaurc
+
+	if fd then
+		luaurc = vim.json.decode(fd:read("*a"), {
+			luanil = {
+				object = true,
+				array = true,
+			},
+		})
+
+		fd:close()
+	end
+
+	return luaurc or {}
 end
 
 local function get_luaurc_sources()
-	local aliases = {}
+	local luaurc = load_luaurc()
+	local sources = {}
 
-	local luau_config = locate_config(".luaurc")[1]
-
-	if luau_config then
-		local fd = io.open(luau_config)
-
-		local content
-
-		if fd then
-			content = vim.json.decode(fd:read("*a"), {
-				luanil = {
-					object = true,
-					array = true,
-				},
-			})
-
-			fd:close()
+	if luaurc.aliases then
+		for name, path in pairs(luaurc.aliases) do
+			sources["@" .. name] = trim(normalize(path), "/")
 		end
+	end
 
-		if content and content.aliases then
-			for alias, dir in pairs(content.aliases) do
-				dir = dir:gsub("^./", "$PWD/")
-				aliases["@" .. alias] = vim.fs.normalize(dir)
+	if luaurc.paths then
+		for _, path in pairs(luaurc.paths) do
+			if vim.fn.isdirectory(path) then
+				for _, name in pairs(vim.fn.readdir(path)) do
+					if not name:match("^_") then
+						sources[trim(name, "%.luau?$") or name] =
+							normalize(path .. "/" .. name)
+					end
+				end
 			end
 		end
 	end
 
-	return aliases
+	return sources
 end
 
 local function organize_sources(sources)
@@ -153,8 +112,7 @@ local function organize_sources(sources)
 end
 
 local function get_string_require_aliases()
-	local sources =
-		vim.tbl_extend("force", get_darklua_sources(), get_luaurc_sources())
+	local sources = get_luaurc_sources()
 
 	if next(sources) == nil then
 		return false, {}
@@ -183,9 +141,19 @@ local function setup_luau_lsp(capabilities)
 
 	local roblox_mode = project_file ~= nil
 
-	local definition_files = {
-		vim.fs.normalize("~/.local/share/luau-lsp/types/roblox.d.lua"),
-	}
+	local definition_files = vim.fs.find(function(name)
+		return name:match(".*%.d%.lua[u]?$")
+	end, {
+		upward = false,
+		path = vim.fs.dirname(vim.api.nvim_buf_get_name(0)),
+	})
+
+	if roblox_mode then
+		table.insert(
+			definition_files,
+			vim.fs.normalize("~/.local/share/luau-lsp/types/roblox.d.lua")
+		)
+	end
 
 	local spec_files = vim.fs.find(function(name)
 		return name:match(".*%.spec%.lua[u]?$")
@@ -219,6 +187,12 @@ local function setup_luau_lsp(capabilities)
 		},
 		types = {
 			definition_files = definition_files,
+		},
+		fflags = {
+			sync = true,
+			override = {
+				LuauTarjanChildLimit = 0,
+			},
 		},
 		server = {
 			capabilities = capabilities,
@@ -254,9 +228,6 @@ local function setup_luau_lsp(capabilities)
 					ignoreGlobs = {
 						"**/_Index/**",
 					},
-				},
-				fflags = {
-					sync = true,
 				},
 			},
 		},

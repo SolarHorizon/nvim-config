@@ -5,8 +5,21 @@ return {
 			formatters_by_ft = {
 				lua = { "stylua" },
 				luau = { "stylua" },
-				javascript = { { "prettierd", "prettier" } },
-				json = { { "prettierd", "prettier" } },
+				javascript = {
+					"prettierd",
+					"prettier",
+					stop_after_first = true,
+				},
+				typescript = {
+					"prettierd",
+					"prettier",
+					stop_after_first = true,
+				},
+				json = {
+					"prettierd",
+					"prettier",
+					stop_after_first = true,
+				},
 				rust = { "rustfmt" },
 			},
 			format_on_save = {

@@ -20,15 +20,37 @@ return {
 					end,
 				},
 			},
+			filesystem = {
+				filtered_items = {
+					hide_by_pattern = {
+						"*.lock*",
+					},
+					always_show = {
+						".lune",
+					},
+				},
+			},
 		},
 		init = function()
 			local wk = require("which-key")
 
 			wk.add({
 				{ "<leader>t", group = "Neo Tree" },
-				{ "<leader>tt", cmd = "<cmd>Neotree toggle<cr>", desc = "Toggle File Tree" },
-				{ "<leader>tb", cmd = "<cmd>Neotree toggle<cr>", desc = "Toggle Buffer Tree" },
-				{ "T", cmd = "<cmd>Neotree toggle<cr>", desc = "Toggle File Tree" }
+				{
+					"<leader>tt",
+					cmd = "<cmd>Neotree toggle<cr>",
+					desc = "Toggle File Tree",
+				},
+				{
+					"<leader>tb",
+					cmd = "<cmd>Neotree toggle<cr>",
+					desc = "Toggle Buffer Tree",
+				},
+				{
+					"T",
+					cmd = "<cmd>Neotree toggle<cr>",
+					desc = "Toggle File Tree",
+				},
 			})
 		end,
 		dependencies = {
@@ -53,8 +75,8 @@ return {
 				{ "<leader>ff", builtin.find_files, desc = "Find File" },
 				{ "<leader>fg", builtin.find_files, desc = "Live Grep" },
 				{ "<leader>fr", builtin.old_files, desc = "Recent Files" },
-				{"<c-p>", builtin.find_files, desc = "Find File" },
-				{"<c-g>", builtin.live_grep, desc = "Live Grep" },
+				{ "<c-p>", builtin.find_files, desc = "Find File" },
+				{ "<c-g>", builtin.live_grep, desc = "Live Grep" },
 			})
 		end,
 		dependencies = {

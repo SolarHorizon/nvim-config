@@ -1,0 +1,14 @@
+diff --git a/queries/luau/highlights.scm b/queries/luau/highlights.scm
+index 08ed56b8..82318b33 100644
+--- a/queries/luau/highlights.scm
++++ b/queries/luau/highlights.scm
+@@ -141,9 +141,6 @@
+ 
+ (builtin_type) @type.builtin
+ 
+-((identifier) @type
+-  (#lua-match? @type "^[A-Z]"))
+-
+ ; Typedefs
+ (type_definition
+   "type"

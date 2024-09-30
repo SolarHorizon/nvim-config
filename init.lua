@@ -42,6 +42,8 @@ vim.o.splitbelow = true
 vim.o.termguicolors = true
 
 vim.o.number = true
+vim.o.colorcolumn = "81"
+vim.o.textwidth = 80
 vim.o.signcolumn = "yes"
 vim.o.relativenumber = true
 

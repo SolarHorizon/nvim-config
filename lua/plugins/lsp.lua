@@ -52,17 +52,45 @@ return {
 					{ "<leader>e", open_float, desc = "Show diagnostic" },
 
 					{ "<leader>c", group = "Code Actions" },
-					{ "<leader>ca", vim.lsp.buf.code_action, desc = "Code action" },
+					{
+						"<leader>ca",
+						vim.lsp.buf.code_action,
+						desc = "Code action",
+					},
 
 					{ "<leader>d", group = "Diagnostics" },
-					{ "<leader>dj", vim.diagnostic.goto_next, desc = "Next message" },
-					{ "<leader>dk", vim.diagnostic.goto_prev, desc = "Previous message" },
-					{ "<leader>dl", cmd = "<cmd>Telescope diagnostics<cr>", desc = "List diagnostics" },
+					{
+						"<leader>dj",
+						vim.diagnostic.goto_next,
+						desc = "Next message",
+					},
+					{
+						"<leader>dk",
+						vim.diagnostic.goto_prev,
+						desc = "Previous message",
+					},
+					{
+						"<leader>dl",
+						cmd = "<cmd>Telescope diagnostics<cr>",
+						desc = "List diagnostics",
+					},
 
 					{ "<leader>g", group = "Go to" },
-					{ "<leader>gd", vim.lsp.buf.definition, desc = "Go to definition" },
-					{ "<leader>gi", vim.lsp.buf.implementation, desc = "Go to implementation" },
-					{ "<leader>gt", vim.lsp.buf.type_definition, desc = "Go to type definition" },
+					{
+						"<leader>gd",
+						vim.lsp.buf.definition,
+						desc = "Go to definition",
+					},
+					{
+						"<leader>gi",
+						vim.lsp.buf.implementation,
+						desc = "Go to implementation",
+					},
+					{
+						"<leader>gt",
+						vim.lsp.buf.type_definition,
+						desc = "Go to type definition",
+					},
 
 					{ "K", vim.lsp.buf.hover, desc = "Hover" },
 				})
@@ -137,7 +165,10 @@ return {
 		dependencies = {
 			"folke/neoconf.nvim",
 			"folke/neodev.nvim",
-			"lopi-py/luau-lsp.nvim",
+			{
+				"lopi-py/luau-lsp.nvim",
+				tag = "v1.4.0",
+			},
 		},
 	},
 }
