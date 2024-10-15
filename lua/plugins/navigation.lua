@@ -22,11 +22,18 @@ return {
 			},
 			filesystem = {
 				filtered_items = {
+					hide_by_name = {
+						"node_modules",
+					},
 					hide_by_pattern = {
 						"*.lock*",
 					},
 					always_show = {
 						".lune",
+					},
+					always_show_by_pattern = {
+						".storybook*",
+						".env*",
 					},
 				},
 			},
