@@ -21,6 +21,7 @@ return {
 					stop_after_first = true,
 				},
 				rust = { "rustfmt" },
+				nix = { "alejandra" },
 			},
 			format_on_save = {
 				timeout_ms = 500,
