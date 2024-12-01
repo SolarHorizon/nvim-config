@@ -7,7 +7,7 @@ function buffopt.tabsize(size)
 end
 
 function buffopt.setup_ts()
-	vim.bo.expandtab = true
+	vim.bo.expandtab = false
 	buffopt.tabsize(2)
 end
 

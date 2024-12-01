@@ -1,7 +1,7 @@
 local setup_luau_lsp = require("matt/util/setup_luau_lsp")
 local is_luau = require("matt/util/is_luau")
 
-return {
+local dependencies = {
 	{
 		"williamboman/mason.nvim",
 		cmd = { "Mason" },
@@ -37,76 +37,11 @@ return {
 	},
 
 	{
-		"neovim/nvim-lspconfig",
-		init = function()
-			local wk = require("which-key")
-
-			local function open_float()
-				vim.diagnostic.open_float({ scope = "line" })
-			end
-
-			local function register_keymap(ev)
-				wk.add({
-					buffer = ev.buf,
-
-					{ "<leader>e", open_float, desc = "Show diagnostic" },
-
-					{ "<leader>c", group = "Code Actions" },
-					{
-						"<leader>ca",
-						vim.lsp.buf.code_action,
-						desc = "Code action",
-					},
-
-					{ "<leader>d", group = "Diagnostics" },
-					{
-						"<leader>dj",
-						vim.diagnostic.goto_next,
-						desc = "Next message",
-					},
-					{
-						"<leader>dk",
-						vim.diagnostic.goto_prev,
-						desc = "Previous message",
-					},
-					{
-						"<leader>dl",
-						cmd = "<cmd>Telescope diagnostics<cr>",
-						desc = "List diagnostics",
-					},
-
-					{ "<leader>g", group = "Go to" },
-					{
-						"<leader>gd",
-						vim.lsp.buf.definition,
-						desc = "Go to definition",
-					},
-					{
-						"<leader>gi",
-						vim.lsp.buf.implementation,
-						desc = "Go to implementation",
-					},
-					{
-						"<leader>gt",
-						vim.lsp.buf.type_definition,
-						desc = "Go to type definition",
-					},
-
-					{ "K", vim.lsp.buf.hover, desc = "Hover" },
-				})
-			end
-
-			vim.api.nvim_create_autocmd("LspAttach", {
-				group = vim.api.nvim_create_augroup("UserLspKeymap", {}),
-				callback = register_keymap,
-			})
-		end,
-	},
-	{
 		"williamboman/mason-lspconfig",
 		opts = {
 			ensure_installed = {
 				"luau_lsp",
+				"ts_ls",
 				"rust_analyzer",
 			},
 		},
@@ -165,10 +100,76 @@ return {
 		dependencies = {
 			"folke/neoconf.nvim",
 			"folke/neodev.nvim",
-			{
-				"lopi-py/luau-lsp.nvim",
-				tag = "v1.4.0",
-			},
+			"lopi-py/luau-lsp.nvim",
 		},
 	},
+}
+
+return {
+	"neovim/nvim-lspconfig",
+	event = { "BufReadPost", "BufWritePost", "BufNewFile" },
+	init = function()
+		local wk = require("which-key")
+
+		local function open_float()
+			vim.diagnostic.open_float({ scope = "line" })
+		end
+
+		local function register_keymap(ev)
+			wk.add({
+				buffer = ev.buf,
+
+				{ "<leader>e", open_float, desc = "Show diagnostic" },
+
+				{ "<leader>c", group = "Code Actions" },
+				{
+					"<leader>ca",
+					vim.lsp.buf.code_action,
+					desc = "Code action",
+				},
+
+				{ "<leader>d", group = "Diagnostics" },
+				{
+					"<leader>dj",
+					vim.diagnostic.goto_next,
+					desc = "Next message",
+				},
+				{
+					"<leader>dk",
+					vim.diagnostic.goto_prev,
+					desc = "Previous message",
+				},
+				{
+					"<leader>dl",
+					cmd = "<cmd>Telescope diagnostics<cr>",
+					desc = "List diagnostics",
+				},
+
+				{ "<leader>g", group = "Go to" },
+				{
+					"<leader>gd",
+					vim.lsp.buf.definition,
+					desc = "Go to definition",
+				},
+				{
+					"<leader>gi",
+					vim.lsp.buf.implementation,
+					desc = "Go to implementation",
+				},
+				{
+					"<leader>gt",
+					vim.lsp.buf.type_definition,
+					desc = "Go to type definition",
+				},
+
+				{ "K", vim.lsp.buf.hover, desc = "Hover" },
+			})
+		end
+
+		vim.api.nvim_create_autocmd("LspAttach", {
+			group = vim.api.nvim_create_augroup("UserLspKeymap", {}),
+			callback = register_keymap,
+		})
+	end,
+	dependencies = dependencies,
 }
