@@ -1,16 +1,11 @@
-local locate_config = require("matt/util/locate_config")
+local get_git_root = require("matt/util/get_git_root")
 
-local project_file_names = {
-	"dev",
-	"test",
-	"build",
-	"default",
-}
-
-for i, name in ipairs(project_file_names) do
-	project_file_names[i] = name .. ".project.json"
+local function get_rojo_projects()
+	return vim.fs.find(function(name)
+		return name:match(".*%.project%.json$")
+	end, {
+		path = get_git_root(),
+	})
 end
 
-return function()
-	return locate_config(project_file_names)
-end
+return get_rojo_projects
