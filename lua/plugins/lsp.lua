@@ -98,6 +98,7 @@ local dependencies = {
 				end,
 				luau_lsp = function()
 					if is_luau() then
+						--setup_server(name)
 						setup_luau_lsp(capabilities)
 					end
 				end,

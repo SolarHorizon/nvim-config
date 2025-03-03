@@ -84,10 +84,6 @@ local function setup_luau_lsp(capabilities)
 	local project_file = projects[1]
 
 	local roblox_mode = project_file ~= nil
-	local string_require_mode = has_darklua_string_require_rule()
-		or has_luaurc_aliases({
-			excludes = { "@lune" },
-		})
 
 	local definition_files = vim.fs.find(function(name)
 		return name:match(".*%.d%.lua[u]?$")
@@ -111,7 +107,7 @@ local function setup_luau_lsp(capabilities)
 
 	require("luau-lsp").setup({
 		sourcemap = {
-			enabled = roblox_mode and not string_require_mode,
+			enabled = roblox_mode,
 			rojo_project_file = project_file,
 		},
 		platform = {
@@ -149,6 +145,7 @@ local function setup_luau_lsp(capabilities)
 				},
 			},
 		},
+		plugin = {},
 	})
 end
 
