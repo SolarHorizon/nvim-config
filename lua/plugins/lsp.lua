@@ -31,6 +31,7 @@ local dependencies = {
 			}, {
 				callback = function()
 					lint.try_lint()
+					--lint.try_lint("cspell")
 				end,
 			})
 		end,

@@ -144,6 +144,7 @@ local function setup_luau_lsp(capabilities)
 					},
 					ignoreGlobs = {
 						"**/_Index/**",
+						"**/.pesde/**",
 					},
 				},
 			},

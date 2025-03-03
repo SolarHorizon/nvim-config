@@ -30,6 +30,7 @@ return {
 					},
 					always_show = {
 						".lune",
+						".luaurc",
 					},
 					always_show_by_pattern = {
 						".storybook*",
