@@ -5,18 +5,51 @@ return {
 	opts = {},
 	init = function()
 		local overseer = require("overseer")
+		local projects = get_rojo_projects()
+		local default_project = "default.project.json"
 
-		if #get_rojo_projects() > 0 then
-			overseer.register_template({
-				name = "Start Rojo Server",
-				priority = 0,
-				builder = function()
-					return {
-						cmd = { "rojo" },
-						args = { "serve" },
-						name = "Rojo Server",
-					}
+		if vim.fn.filereadable("./sync.project.json") == 1 then
+			default_project = "sync.project.json"
+		end
+
+		overseer.register_template({
+			name = "Start Rojo Server",
+			params = function()
+				return {
+					project = {
+						desc = "Project to sync",
+						type = "enum",
+						optional = true,
+						default = default_project,
+						choices = projects,
+					},
+				}
+			end,
+			builder = function(params)
+				return {
+					name = "Rojo Server",
+					cmd = { "rojo", "serve" },
+					args = { params.project },
+				}
+			end,
+			condition = {
+				callback = function()
+					return #projects > 0
 				end,
+			},
+		})
+
+		if #projects > 0 then
+			vim.api.nvim_create_user_command("RojoServe", function(opts)
+				overseer.run_template({
+					name = "Start Rojo Server",
+					params = { project = opts.fargs[1] },
+				})
+			end, {
+				complete = function()
+					return projects
+				end,
+				nargs = "?",
 			})
 		end
 

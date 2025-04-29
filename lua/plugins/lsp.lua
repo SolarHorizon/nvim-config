@@ -1,5 +1,4 @@
 local setup_luau_lsp = require("matt/util/setup_luau_lsp")
-local is_luau = require("matt/util/is_luau")
 
 local dependencies = {
 	{
@@ -31,7 +30,6 @@ local dependencies = {
 			}, {
 				callback = function()
 					lint.try_lint()
-					--lint.try_lint("cspell")
 				end,
 			})
 		end,
@@ -48,10 +46,7 @@ local dependencies = {
 		},
 		config = function()
 			require("neoconf").setup()
-
-			if not is_luau() then
-				require("neodev").setup()
-			end
+			require("lazydev").setup()
 
 			local capabilities = vim.tbl_deep_extend(
 				"force",
@@ -91,22 +86,14 @@ local dependencies = {
 						},
 					})
 				end,
-				lua_ls = function(name)
-					if not is_luau() then
-						setup_server(name)
-					end
-				end,
 				luau_lsp = function()
-					if is_luau() then
-						--setup_server(name)
-						setup_luau_lsp(capabilities)
-					end
+					setup_luau_lsp(capabilities)
 				end,
 			})
 		end,
 		dependencies = {
 			"folke/neoconf.nvim",
-			"folke/neodev.nvim",
+			"folke/lazydev.nvim",
 			"lopi-py/luau-lsp.nvim",
 		},
 	},

@@ -10,47 +10,47 @@ local function read_file(file)
 
 	return fd:read("*a")
 end
-
-local function has_darklua_string_require_rule()
-	local darklua_config = vim.fs.find(function(name)
-		return name:match("^%.darklua%.json[5]?$")
-	end, {
-		limit = 1,
-		path = vim.fs.dirname(vim.api.nvim_buf_get_name(0)),
-	})
-
-	if not darklua_config[1] then
-		return false
-	end
-
-	local file = read_file(darklua_config[1])
-
-	if not file then
-		return false
-	end
-
-	local content = vim.json.decode(file)
-
-	if not content.rules then
-		return false
-	end
-
-	for _, rule in ipairs(content.rules) do
-		if
-			type(rule) == "table"
-			and rule.rule == "convert_require"
-			and rule.current.name == "path"
-		then
-			return true
-		end
-	end
-
-	return false
-end
-
+--
+-- local function has_darklua_string_require_rule()
+-- 	local darklua_config = vim.fs.find(function(name)
+-- 		return name:match("^%.darklua%.json[5]?$")
+-- 	end, {
+-- 		limit = 1,
+-- 		path = vim.fs.dirname(vim.api.nvim_buf_get_name(0)),
+-- 	})
+--
+-- 	if not darklua_config[1] then
+-- 		return false
+-- 	end
+--
+-- 	local file = read_file(darklua_config[1])
+--
+-- 	if not file then
+-- 		return false
+-- 	end
+--
+-- 	local content = vim.json.decode(file)
+--
+-- 	if not content.rules then
+-- 		return false
+-- 	end
+--
+-- 	for _, rule in ipairs(content.rules) do
+-- 		if
+-- 			type(rule) == "table"
+-- 			and rule.rule == "convert_require"
+-- 			and rule.current.name == "path"
+-- 		then
+-- 			return true
+-- 		end
+-- 	end
+--
+-- 	return false
+-- end
+--
 local function has_luaurc_aliases(opts)
-	local luaurc = vim.fs.find(function(name)
-		return name:match("^%.luaurc$")
+	local luaurc = vim.fs.find(function(name, path)
+		return not path:match("[/\\\\]%.?lune$") and name:match("^%.luaurc$")
 	end, {
 		path = get_git_root(),
 		upward = false,
@@ -92,18 +92,16 @@ local function setup_luau_lsp(capabilities)
 		path = vim.fs.dirname(vim.api.nvim_buf_get_name(0)),
 	})
 
-	vim.filetype.add({
-		extension = {
-			lua = "luau",
-		},
-	})
+	local suggest_roblox_requires = roblox_mode
+		and not has_luaurc_aliases({
+			excludes = { "lune" },
+		})
 
-	vim.api.nvim_create_user_command("DebugPrint", function()
-		print(
-			has_darklua_string_require_rule(),
-			has_luaurc_aliases({ excludes = { "@lune" } })
-		)
-	end, {})
+	--	vim.filetype.add({
+	--		extension = {
+	--			lua = "luau",
+	--		},
+	--	})
 
 	require("luau-lsp").setup({
 		sourcemap = {
@@ -124,7 +122,7 @@ local function setup_luau_lsp(capabilities)
 		},
 		server = {
 			capabilities = capabilities,
-			filetypes = { "lua", "luau" },
+			filetypes = { "luau" },
 			settings = {
 				["luau-lsp"] = {
 					require = {
@@ -134,8 +132,12 @@ local function setup_luau_lsp(capabilities)
 						imports = {
 							enabled = true,
 							suggestServices = roblox_mode,
-							suggestRequires = true,
+							suggestRequires = suggest_roblox_requires,
 							separateGroupsWithLine = true,
+							ignoreGlobs = {
+								"**/_Index/**",
+								"**/.pesde/**",
+							},
 						},
 					},
 					ignoreGlobs = {

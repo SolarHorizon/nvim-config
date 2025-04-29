@@ -33,6 +33,7 @@ vim.keymap.set(
 	":execute '!pwsh.exe -c Start-Process ' . shellescape(expand('<cfile>'), 1)<CR>"
 )
 
+vim.o.exrc = true
 vim.o.scrolloff = 4
 vim.o.tabstop = 4
 vim.o.shiftwidth = 4
