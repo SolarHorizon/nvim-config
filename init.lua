@@ -80,7 +80,3 @@ require("lazy").setup("plugins", {
 		},
 	},
 })
-
-vim.api.nvim_create_user_command("Print", function()
-	print("debug print")
-end, {})

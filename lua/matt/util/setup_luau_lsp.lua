@@ -1,6 +1,12 @@
 local get_rojo_projects = require("matt/util/get_rojo_projects")
 local get_git_root = require("matt/util/get_git_root")
 
+local PROJECT_AUTO_SELECTION_ORDER = {
+	"sync",
+	"dev",
+	"default",
+}
+
 local function read_file(file)
 	local fd = io.open(file)
 
@@ -47,7 +53,58 @@ end
 --
 -- 	return false
 -- end
---
+
+local function create_roblox_tasks()
+	local overseer = require("overseer")
+	local projects = get_rojo_projects()
+	local default_project = "default.project.json"
+
+	if vim.fn.filereadable("./sync.project.json") == 1 then
+		default_project = "sync.project.json"
+	end
+
+	overseer.register_template({
+		name = "Start Rojo Server",
+		params = function()
+			return {
+				project = {
+					desc = "Project to sync",
+					type = "enum",
+					optional = true,
+					default = default_project,
+					choices = projects,
+				},
+			}
+		end,
+		builder = function(params)
+			return {
+				name = "Rojo Server",
+				cmd = { "rojo", "serve" },
+				args = { params.project },
+			}
+		end,
+		condition = {
+			callback = function()
+				return #projects > 0
+			end,
+		},
+	})
+
+	if #projects > 0 then
+		vim.api.nvim_create_user_command("RojoServe", function(opts)
+			overseer.run_template({
+				name = "Start Rojo Server",
+				params = { project = opts.fargs[1] },
+			})
+		end, {
+			complete = function()
+				return projects
+			end,
+			nargs = "?",
+		})
+	end
+end
+
 local function has_luaurc_aliases(opts)
 	local luaurc = vim.fs.find(function(name, path)
 		return not path:match("[/\\\\]%.?lune$") and name:match("^%.luaurc$")
@@ -81,7 +138,22 @@ end
 
 local function setup_luau_lsp(capabilities)
 	local projects = get_rojo_projects()
-	local project_file = projects[1]
+	local project_file
+
+	for _, name in ipairs(PROJECT_AUTO_SELECTION_ORDER) do
+		if
+			vim.tbl_contains(projects, function(v)
+				return string.match(v, name .. "%.project%.json$") ~= nil
+			end, { predicate = true })
+		then
+			project_file = name
+			break
+		end
+	end
+
+	if not project_file then
+		project_file = projects[1]
+	end
 
 	local roblox_mode = project_file ~= nil
 
@@ -92,16 +164,7 @@ local function setup_luau_lsp(capabilities)
 		path = vim.fs.dirname(vim.api.nvim_buf_get_name(0)),
 	})
 
-	local suggest_roblox_requires = roblox_mode
-		and not has_luaurc_aliases({
-			excludes = { "lune" },
-		})
-
-	--	vim.filetype.add({
-	--		extension = {
-	--			lua = "luau",
-	--		},
-	--	})
+	create_roblox_tasks()
 
 	require("luau-lsp").setup({
 		sourcemap = {
@@ -132,11 +195,18 @@ local function setup_luau_lsp(capabilities)
 						imports = {
 							enabled = true,
 							suggestServices = roblox_mode,
-							suggestRequires = suggest_roblox_requires,
 							separateGroupsWithLine = true,
 							ignoreGlobs = {
 								"**/_Index/**",
 								"**/.pesde/**",
+								"*.server.luau",
+								"*.client.luau",
+								"*.plugin.luau",
+							},
+							stringRequires = {
+								enabled = roblox_mode and has_luaurc_aliases({
+									excludes = { "@lune" },
+								}),
 							},
 						},
 					},

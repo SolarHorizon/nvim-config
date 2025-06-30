@@ -83,6 +83,8 @@ return {
 				{ "<leader>ff", builtin.find_files, desc = "Find File" },
 				{ "<leader>fg", builtin.find_files, desc = "Live Grep" },
 				{ "<leader>fr", builtin.old_files, desc = "Recent Files" },
+				{ "<leader>fs", builtin.grep_string, desc = "Grep string" },
+				{ "<leader>fs", builtin.live_grep, desc = "Grep string" },
 				{ "<c-p>", builtin.find_files, desc = "Find File" },
 				{ "<c-g>", builtin.live_grep, desc = "Live Grep" },
 			})
